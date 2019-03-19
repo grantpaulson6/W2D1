@@ -1,17 +1,18 @@
-require_relative 'board'
+require 'singleton'
+require 'byebug'
 
 class Piece
 
-  attr_reader :name, :color
+  attr_reader :color, :board
   attr_accessor :position
 
-  def initialize(name, color, position)
-    @name = name
+  def initialize(color, position, board)
     @position = position
     @color = color
+    @board = board
   end
 
-  def valid_moves
+  def moves
     answer = []
     (0..7).each do |row|
       (0..7).each do |col|
@@ -21,5 +22,11 @@ class Piece
     answer
   end
 
+end
+
+class NullPiece < Piece
+  include Singleton
+  def initialize
+  end
 end
 
