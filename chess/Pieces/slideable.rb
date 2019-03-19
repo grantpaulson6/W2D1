@@ -6,7 +6,13 @@ module Slideable
     all_moves = []
     dirs.each do |dir|
       new_pos = update(self.position, dir)
-      while on_board?(new_pos) && unoccupied?(new_pos)
+      while on_board?(new_pos) 
+        if occupied?(new_pos)
+          if board[new_pos].color != color
+            all_moves << new_pos
+          end
+          break
+        end
         all_moves << new_pos
         new_pos = update(new_pos, dir)
       end
@@ -25,9 +31,9 @@ module Slideable
     true
   end
 
-  def unoccupied?(pos)
-    return true if self.board.empty?(pos)
-    false
+  def occupied?(pos)
+    return false if self.board.empty?(pos)
+    true
   end
 end
 

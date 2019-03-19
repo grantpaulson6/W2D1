@@ -5,6 +5,9 @@ require 'byebug'
 
 
 class Board
+
+  attr_accessor :board
+
   def initialize
     @board = Array.new(8){Array.new(8)}
     setup_board
@@ -24,14 +27,19 @@ class Board
     [[7,4]].each { |pos| self[pos] = King.new(:white, pos, self) }
 
     (0..7).each do |col|
-      self[1,col] = Pawn.new(:black, [1,col], self)
-      self[6,col] = Pawn.new(:white, [6,col], self)
+      self[[1,col]] = Pawn.new(:black, [1,col], self)
+      self[[6,col]] = Pawn.new(:white, [6,col], self)
     end
     (2..5).each do |row|
       (0..7).each do |col|
         self[[row, col]] = NullPiece.instance
       end
     end
+
+    self[[2,1]] = Pawn.new(:white, [2,0], self)
+    self[[5,3]] = Knight.new(:black, [5,3], self)
+    #self[[5,5]] = Knight.new(:black, [5,5], self)
+    self[[5,4]] = Rook.new(:black, [5,4], self)
   end
 
   def [](pos)
@@ -58,10 +66,57 @@ class Board
     raise InvalidMoveError unless valid_moves.include? end_pos
     self[start_pos], self[end_pos] = self[end_pos], self[start_pos]
   end
-  attr_accessor :board
+
+  def each(&prc)
+    board.each do |row|
+      row.each do |piece|
+        prc.call(piece)
+      end
+    end
+  end
+
+  def find_king(color)
+    self.each do |piece|
+      return piece if piece.color == color && piece.is_a?(King)
+    end
+  end
+
+  def in_check?(color)
+    king = find_king(color)
+    self.each do |piece|
+      return true if !(piece.is_a?(NullPiece)) && piece.moves.include?(king.position)
+    end
+    return false
+  end
+
+  def checkmate?(color)
+    self.each do |piece|
+      return false if !(piece.is_a?(NullPiece)) && !piece.valid_moves.empty? && piece.color == color
+    end
+    true
+  end
+
+  def dup
+    dupboard = Board.new
+    (0..7).each do |row|
+      (0..7).each do |col|
+        piece = self[[row, col]]
+        if piece.is_a? NullPiece
+          dupboard[[row, col]] = NullPiece.instance
+        else
+          piece_type = piece.class
+          dupboard[piece.position] = piece_type.new(piece.color, piece.position, dupboard)
+        end
+      end
+    end
+    dupboard
+  end
+
+  def move_piece!(color, start_pos, end_pos)
+    self[end_pos] = self[start_pos]
+    self[start_pos] = NullPiece.instance
+  end
 end
-
-
 
 
 class InvalidMoveError < StandardError
@@ -72,17 +127,14 @@ end
 
 if __FILE__ == $PROGRAM_NAME
   # b = Board.new
-  # d = Display.new(b)
-  # #d.render
-
-  # d.move
-  # # b.render
-  # # b.move_piece([1,0], [3,0])
-  # # b.render
-
+  
   board = Board.new
-  q = Queen.new(:black, [3,3], board)
+  display = Display.new(board)
+  # r = board[[5,4]].class
+  # board[[4,0]] = r.new(:black, [4,0], board)
+  p board.in_check?(:white)
+  p board.checkmate?(:white)
+  display.render
   #p b.on_board?([0,8])
-  p q.symbol
-  #p all_pos = q.moves
+  #p q.symbol
 end

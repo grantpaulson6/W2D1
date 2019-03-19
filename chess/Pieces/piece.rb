@@ -12,14 +12,19 @@ class Piece
     @board = board
   end
 
-  def moves
-    answer = []
-    (0..7).each do |row|
-      (0..7).each do |col|
-        answer << [row, col]
+  def valid_moves
+    val_moves = []
+    next_moves = self.moves
+    if board.in_check?(color)
+      next_moves.each do |move|
+        hypo_board = board.dup
+        hypo_board.move_piece!(color, position, move)
+        val_moves << move unless hypo_board.in_check?(color)
       end
+    else
+      val_moves += next_moves
     end
-    answer
+    val_moves
   end
 
 end

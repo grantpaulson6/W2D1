@@ -1,12 +1,13 @@
+require 'byebug'
+
 module Stepable
   def moves
     dirs = self.move_dirs
     all_moves = []
     dirs.each do |dir|
       new_pos = update(self.position, dir)
-      if on_board?(pos) && unoccupied?(pos)
+      if on_board?(new_pos) && board[new_pos].color != color
         all_moves << new_pos
-        new_pos = update(new_pos, dir)
       end
     end
     return all_moves

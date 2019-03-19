@@ -14,24 +14,24 @@ class Display
       print_row = ""
       row.each_with_index do |piece, j|
         if [i,j] == cursor.cursor_pos
-          if piece.name == :null
-            print_row << "  ".on_red
+          if piece.is_a? NullPiece
+            print_row << "   ".on_red
           else
-            new_sqr = piece.name[0] + ' '
+            new_sqr = ' ' + piece.symbol + ' '
             print_row << new_sqr.colorize(piece.color).on_red
           end
         elsif (i + j) % 2 == 0
-          if piece.name == :null
-            print_row << "  ".on_cyan
+          if piece.is_a? NullPiece
+            print_row << "   ".on_cyan
           else
-            new_sqr = piece.name[0] + ' '
+            new_sqr = ' ' + piece.symbol + ' '
             print_row << new_sqr.colorize(piece.color).on_cyan
           end
         else
-          if piece.name == :null
-            print_row << "  ".on_light_black
+          if piece.is_a? NullPiece
+            print_row << "   ".on_light_black
           else
-            new_sqr = piece.name[0] + ' '
+            new_sqr = ' ' + piece.symbol + ' '
             print_row << new_sqr.colorize(piece.color).on_light_black
           end
         end
