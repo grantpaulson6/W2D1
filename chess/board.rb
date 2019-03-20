@@ -36,10 +36,10 @@ class Board
       end
     end
 
-    self[[2,1]] = Pawn.new(:white, [2,0], self)
-    self[[5,3]] = Knight.new(:black, [5,3], self)
-    #self[[5,5]] = Knight.new(:black, [5,5], self)
-    self[[5,4]] = Rook.new(:black, [5,4], self)
+    # self[[2,1]] = Pawn.new(:white, [2,0], self)
+    # #self[[5,3]] = Knight.new(:black, [5,3], self)
+    # #self[[6,4]] = Bishop.new(:white, [6,4], self)
+    # self[[5,4]] = Rook.new(:black, [5,4], self)
   end
 
   def [](pos)
@@ -60,12 +60,12 @@ class Board
     return true if self[pos].is_a? NullPiece
   end
 
-  def move_piece(start_pos, end_pos)
-    raise InvalidMoveError unless self[start_pos].is_a? Piece
-    valid_moves = self[start_pos].valid_moves
-    raise InvalidMoveError unless valid_moves.include? end_pos
-    self[start_pos], self[end_pos] = self[end_pos], self[start_pos]
-  end
+  # def move_piece(start_pos, end_pos)
+  #   raise InvalidMoveError unless self[start_pos].is_a? Piece
+  #   valid_moves = self[start_pos].valid_moves
+  #   raise InvalidMoveError unless valid_moves.include? end_pos
+  #   self[start_pos], self[end_pos] = self[end_pos], self[start_pos]
+  # end
 
   def each(&prc)
     board.each do |row|
@@ -113,8 +113,19 @@ class Board
   end
 
   def move_piece!(color, start_pos, end_pos)
+    self[start_pos].position = end_pos
     self[end_pos] = self[start_pos]
     self[start_pos] = NullPiece.instance
+  end
+
+  def move_piece(color, start_pos, end_pos)
+    if !self[start_pos].is_a?(NullPiece) && self[start_pos].valid_moves.include?(end_pos) && self[start_pos].color == color
+      self[start_pos].position = end_pos
+      self[end_pos] = self[start_pos]
+      self[start_pos] = NullPiece.instance
+    else
+      raise InvalidMoveError
+    end
   end
 end
 
@@ -126,15 +137,12 @@ class InvalidMoveError < StandardError
 end
 
 if __FILE__ == $PROGRAM_NAME
-  # b = Board.new
   
   board = Board.new
   display = Display.new(board)
-  # r = board[[5,4]].class
-  # board[[4,0]] = r.new(:black, [4,0], board)
-  p board.in_check?(:white)
+
   p board.checkmate?(:white)
+ 
   display.render
-  #p b.on_board?([0,8])
-  #p q.symbol
+
 end

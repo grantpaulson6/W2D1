@@ -15,14 +15,10 @@ class Piece
   def valid_moves
     val_moves = []
     next_moves = self.moves
-    if board.in_check?(color)
-      next_moves.each do |move|
-        hypo_board = board.dup
-        hypo_board.move_piece!(color, position, move)
-        val_moves << move unless hypo_board.in_check?(color)
-      end
-    else
-      val_moves += next_moves
+    next_moves.each do |move|
+      hypo_board = board.dup
+      hypo_board.move_piece!(color, position, move)
+      val_moves << move unless hypo_board.in_check?(color)
     end
     val_moves
   end

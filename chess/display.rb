@@ -4,6 +4,8 @@ require_relative 'cursor'
 
 
 class Display
+  attr_reader :board, :cursor
+
   def initialize(board)
     @board = board
     @cursor = Cursor.new([0,0], board)
@@ -40,14 +42,12 @@ class Display
     end
   end
 
-  def move
-    while true
-      render
-      cursor.get_input
-      system("clear")
-    end
-  end
-
-  attr_reader :board, :cursor
+  # def move
+  #   while true
+  #     render
+  #     cursor.get_input
+  #     system("clear")
+  #   end
+  # end
 end
 
